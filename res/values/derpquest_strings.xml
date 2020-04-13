@@ -1043,4 +1043,8 @@
     <string name="enable_clear_all_button">Replace clear all text with nice button</string>
     <string name="enable_clear_all_button_summary">Show clear all notifications button in quick settings instead of default text one</string>
 
+    <!-- Volume panel Hide Things-->
+    <string name="synthos_hide_things_volumepanel_title">Hide Things below volume panel</string>
+    <string name="synthos_hide_things_volumepanel_summary">Hide Settings and Ringer Container below volume panel</string>
+
 </resources>
