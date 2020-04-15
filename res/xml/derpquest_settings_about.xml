@@ -93,6 +93,15 @@
         android:key="about_external"
         android:title="@string/about_external_category">
 
+	<Preference
+	    android:key="tg_of"
+	    android:title="Sanders Telegram Group"
+	    android:summary="Official, Global Telegram Group of Sanders">
+	    <intent
+		android:action="android.intent.action.VIEW"
+		android:data="https://t.me/DerpFestSanders"/>
+	</Preference>
+
         <Preference
             android:key="site_pref"
             android:title="@string/about_site_title"
