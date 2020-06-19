@@ -28,7 +28,7 @@
             android:dialogTitle="@string/synthos_volume_panel_theme_summary"
             android:entries="@array/volume_theme_entries"
             android:entryValues="@array/volume_theme_values"
-            android:defaultValue="0"
+            android:defaultValue="1"
             android:persistent="false" />
 
          <com.derpquest.settings.preferences.SystemSettingSwitchPreference
