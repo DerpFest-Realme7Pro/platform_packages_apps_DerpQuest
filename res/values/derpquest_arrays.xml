@@ -836,6 +836,8 @@
         <item>@string/accent_preset_35</item>
         <item>@string/accent_preset_36</item>
         <item>@string/accent_preset_37</item>
+        <item>@string/accent_preset_38</item>
+        <item>@string/accent_preset_39</item>
     </string-array>
 
     <string-array name="accent_presets_values" translatable="false">
@@ -878,6 +880,8 @@
         <item>FFFFFFFF</item>
         <item>FF107C10</item>
         <item>FFff6700</item>
+        <item>FF7f99ce</item>
+        <item>FF7f91ce</item>
     </string-array>
 
     <!-- PowerMenu Filter -->
