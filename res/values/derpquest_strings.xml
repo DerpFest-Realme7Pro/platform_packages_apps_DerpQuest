@@ -1141,6 +1141,8 @@
     <string name="accent_preset_35">white</string>
     <string name="accent_preset_36">XboxGreen</string>
     <string name="accent_preset_37">XiaomiOrange</string>
+    <string name="accent_preset_38">PixelBlue</string>
+    <string name="accent_preset_39">MayurBlue</string>
     <string name="accent_preset_title">Accent preset</string>
 
     <!-- Powermunu Background Options-->
