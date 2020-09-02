@@ -1205,4 +1205,9 @@
     <string name="enable_clear_all_button">Replace clear all text with nice button</string>
     <string name="enable_clear_all_button_summary">Show clear all notifications button in quick settings instead of default text one</string>
 
+    <!-- disco xd -->
+    <string name="qs_bg_use_rgb">Use RGB colors</string>
+    <string name="qs_bg_use_rgb_summary">Enable disco mode on QS background to show different RGB colors</string>
+    <string name="qs_bg_use_disco">QS tile disco</string>
+    <string name="qs_bg_use_disco_summary">Make your QS Tiles colorful!</string>
 </resources>
