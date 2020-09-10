@@ -63,13 +63,6 @@
             android:summary="@string/qs_bg_use_disco_summary"
             android:defaultValue="false" />
 
-        <com.derpquest.settings.preferences.SystemSettingSwitchPreference
-            android:key="qs_panel_bg_rgb"
-            android:title="@string/qs_bg_use_rgb"
-            android:summary="@string/qs_bg_use_rgb_summary"
-            android:defaultValue="false"
-            android:dependency="qs_panel_bg_use_wall" />
-
         <!-- Blur Settings -->
         <com.derpquest.settings.preferences.SystemSettingMasterSwitchPreference
             android:key="qs_blur"
