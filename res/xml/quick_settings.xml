@@ -37,13 +37,13 @@
             android:entryValues="@array/quick_pulldown_values"
             android:defaultValue="0" />
 
-        <ListPreference
+        <com.derp.support.preferences.SystemSettingListPreference
             android:key="qs_clock_picker"
             android:defaultValue="0"
             android:title="@string/qsclockpicker_title"
             android:entries="@array/qsclock_type_entries"
             android:entryValues="@array/qsclock_type_values"
-            android:summary="@string/qsclockpicker_summary" />
+            android:summary="%s" />
 
         <com.derp.support.preferences.SystemSettingSwitchPreference
             android:key="qs_show_battery_estimate"

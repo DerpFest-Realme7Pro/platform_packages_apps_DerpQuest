@@ -16,12 +16,16 @@
 
 package org.derpfest.derpspace.fragments;
 
+import static android.os.UserHandle.USER_CURRENT;
+import static android.os.UserHandle.USER_SYSTEM;
 import android.app.ActivityManagerNative;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.database.ContentObserver;
+import android.net.Uri;
+import android.content.om.IOverlayManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
@@ -52,6 +56,7 @@ import com.android.settingslib.search.Indexable;
 import com.android.settingslib.search.SearchIndexable;
 
 import com.derp.support.preferences.SystemSettingEditTextPreference;
+import com.derp.support.preferences.SystemSettingListPreference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,10 +69,16 @@ public class QuickSettings extends SettingsPreferenceFragment implements OnPrefe
 
     private static final String PREF_SMART_PULLDOWN = "smart_pulldown";
     private static final String QS_FOOTER_TEXT_STRING = "qs_footer_text_string";
+    private static final String QS_CLOCK_PICKER = "qs_clock_picker";
 
     private ListPreference mQuickPulldown;
     private ListPreference mSmartPulldown;
     private SystemSettingEditTextPreference mFooterString;
+    private SystemSettingListPreference mQsClockPicker;
+
+    private IOverlayManager mOverlayManager;
+    private IOverlayManager mOverlayService;
+    private Handler mHandler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -103,6 +114,57 @@ public class QuickSettings extends SettingsPreferenceFragment implements OnPrefe
             Settings.System.putString(getActivity().getContentResolver(),
                     Settings.System.QS_FOOTER_TEXT_STRING, "#StayDerped");
         }
+
+        mOverlayManager = IOverlayManager.Stub.asInterface(
+                ServiceManager.getService(Context.OVERLAY_SERVICE));
+        mOverlayService = IOverlayManager.Stub
+                .asInterface(ServiceManager.getService(Context.OVERLAY_SERVICE));
+
+        mQsClockPicker = (SystemSettingListPreference) findPreference(QS_CLOCK_PICKER);
+        boolean isAospClock = Settings.System.getIntForUser(resolver,
+                QS_CLOCK_PICKER, 0, UserHandle.USER_CURRENT) == 4;
+        mQsClockPicker.setOnPreferenceChangeListener(this);
+        mCustomSettingsObserver.observe();
+    }
+
+    private CustomSettingsObserver mCustomSettingsObserver = new CustomSettingsObserver(mHandler);
+    private class CustomSettingsObserver extends ContentObserver {
+
+        CustomSettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            Context mContext = getContext();
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QS_CLOCK_PICKER ),
+                    false, this, UserHandle.USER_ALL);
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            if (uri.equals(Settings.System.getUriFor(Settings.System.QS_CLOCK_PICKER ))) {
+                updateQsClock();
+            }
+        }
+    }
+
+    private void updateQsClock() {
+        ContentResolver resolver = getActivity().getContentResolver();
+
+        boolean AospClock = Settings.System.getIntForUser(getContext().getContentResolver(),
+                Settings.System.QS_CLOCK_PICKER , 0, UserHandle.USER_CURRENT) == 4;
+        boolean ColorOsClock = Settings.System.getIntForUser(getContext().getContentResolver(),
+                Settings.System.QS_CLOCK_PICKER , 0, UserHandle.USER_CURRENT) == 5;
+
+        if (AospClock) {
+            updateQsClockPicker(mOverlayManager, "com.spark.qsclockoverlays.aosp");
+        } else if (ColorOsClock) {
+            updateQsClockPicker(mOverlayManager, "com.spark.qsclockoverlays.coloros");
+        } else {
+            setDefaultClock(mOverlayManager);
+        }
     }
 
      @Override
@@ -133,9 +195,55 @@ public class QuickSettings extends SettingsPreferenceFragment implements OnPrefe
                         Settings.System.QS_FOOTER_TEXT_STRING, "#StayDerped");
             }
             return true;
+        } else if (preference == mQsClockPicker) {
+            int SelectedClock = Integer.valueOf((String) newValue);
+            Settings.System.putInt(resolver, Settings.System.QS_CLOCK_PICKER, SelectedClock);
+            mCustomSettingsObserver.observe();
+            return true;
         }
         return false;
     }
+
+    public static void setDefaultClock(IOverlayManager overlayManager) {
+        for (int i = 0; i < CLOCKS.length; i++) {
+            String clocks = CLOCKS[i];
+            try {
+                overlayManager.setEnabled(clocks, false, USER_SYSTEM);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void updateQsClockPicker(IOverlayManager overlayManager, String overlayName) {
+        try {
+            for (int i = 0; i < CLOCKS.length; i++) {
+                String clocks = CLOCKS[i];
+                try {
+                    overlayManager.setEnabled(clocks, false, USER_SYSTEM);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+            overlayManager.setEnabled(overlayName, true, USER_SYSTEM);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void handleOverlays(String packagename, Boolean state, IOverlayManager mOverlayManager) {
+        try {
+            mOverlayManager.setEnabled(packagename,
+                    state, USER_SYSTEM);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static final String[] CLOCKS = {
+        "com.spark.qsclockoverlays.aosp",
+        "com.spark.qsclockoverlays.coloros",
+    };
 
     @Override
     public int getMetricsCategory() {
